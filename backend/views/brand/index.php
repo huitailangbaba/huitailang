@@ -17,7 +17,11 @@
         <tr>
             <td><?=$data->id?></td>
             <td><?=$data->name?></td>
-            <td><img src="<?=Yii::getAlias("@web")."/".$data->logo?>" height="28"></td>
+            <td><?php
+                $imgPath=strpos($data->logo,'ttp://')?$data->logo:"/".$data->logo;
+                echo \yii\bootstrap\Html::img($imgPath,['height'=>30]);
+                ?>
+            </td>
             <td><?=$data->sort?></td>
             <td><?=\backend\models\Brand::$is[$data->status]?></td>
             <td><?=$data->intro?></td>

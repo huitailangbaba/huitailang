@@ -4,7 +4,9 @@ namespace backend\controllers;
 
 use backend\models\Brand;
 use yii\data\Pagination;
+use yii\helpers\Json;
 use yii\web\UploadedFile;
+use crazyfd\qiniu\Qiniu;
 
 class BrandController extends \yii\web\Controller
 {
@@ -36,27 +38,10 @@ class BrandController extends \yii\web\Controller
 
         //判断是否是post提交
         if($request->isPost){
-
-            //得到上传的图片对象
-            $brand->img = UploadedFile::getInstance($brand,"img");
-
-            $imgPath="";
-
-            if($brand->img!==null){
-                //设定一个临时的图片存放路径
-                $imgPath="images/".time().".".$brand->img->extension;
-
-                //移动图片路劲
-
-                $brand->img->saveAs($imgPath);
-
-            }
                 //绑定数据
                 $brand->load($request->post());
                 //后端验证
                 if($brand->validate()){
-                    //验证成功   保存数据
-                    $brand->logo= $imgPath;
                     if ($brand->save()) {
                         //添加成功 调回首页
                         \Yii::$app->session->setFlash("success","添加修改");
@@ -87,19 +72,6 @@ class BrandController extends \yii\web\Controller
 
         //判断是否是post提交
         if($request->isPost){
-
-            //得到上传的图片对象
-            $brand->img = UploadedFile::getInstance($brand,"img");
-
-            if($brand->img!==null) {
-                //设定一个临时的图片存放路径
-                $imgPath = "images/" . time() . "." . $brand->img->extension;
-
-                //移动图片路劲
-                $brand->img->saveAs($imgPath);
-                $brand->logo= $imgPath;
-            }
-
                 //绑定数据
                 $brand->load($request->post());
                 //后端验证
@@ -153,4 +125,48 @@ class BrandController extends \yii\web\Controller
         \Yii::$app->session->setFlash("success","还原成功");
         return $this->redirect(["h"]);
     }
+    //用来处理上传图片
+    public function actionUpload(){
+
+        switch (\Yii::$app->params["uploadType"]){
+                case "127.0.0.1" :
+        $fileObj = UploadedFile::getInstanceByName("file");
+       if($fileObj!==null){
+               //设定一个临时的图片存放路径
+               $imgPath="images/".time().".".$fileObj->extension;
+
+           if ($fileObj->saveAs($imgPath,false)) {
+                  $ok=[
+                      "code"=>"0",
+                      "url"=>"/".$imgPath,
+                      "attachment"=>$imgPath
+                  ];
+          return Json::encode($ok);
+
+           }else{
+               $result=[
+                   "code"=>"1",
+                   "msg"=>"error"
+               ];
+               return Json::encode($result);
+           }
+
+           }
+
+            case "qiliuyun" :
+                $ak = 'g55WlYZmAcfjlQDw4CgilVkj-JiDkt6I7RtcPQM9';
+                $sk = '2XVES6fEUq2aK14htnOjSVf-7cOFd-2RHfknBjcy';
+                $domain = 'http://p5obj1i27.bkt.clouddn.com//';
+                $bucket = 'php1108';
+                $zone = 'south_china';
+                $qiniu = new Qiniu($ak, $sk,$domain, $bucket,$zone);
+                $key = time();
+                $key .= strtolower(strrchr($_FILES["file"]['name'], '.'));
+
+                $qiniu->uploadFile($_FILES["file"]['tmp_name'],$key);
+                $url = $qiniu->getLink($key);
+
+        }
+
+   }
 }

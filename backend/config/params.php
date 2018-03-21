@@ -1,7 +1,7 @@
 <?php
 return [
     'domain' => 'http://blog.m/',
-    "uploadType"=>"127.0.0.1",
+    "uploadType"=>"qiliuyun",
     'webuploader' => [
         // 后端处理图片的地址，value 是相对的地址
         'uploadUrl' => '/brand/upload',

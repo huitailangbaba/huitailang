@@ -46,7 +46,6 @@
 ])
 ?>
 <br/>
-<a href="<?=\yii\helpers\Url::to(["article/add"])?>" class="btn btn-info">添加</a>
 
 
 

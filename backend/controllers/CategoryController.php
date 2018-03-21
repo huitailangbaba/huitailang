@@ -78,7 +78,7 @@ class CategoryController extends \yii\web\Controller
             if($category->validate()){
                 //添加以及分类
                 if($category->parent_id==0){
-                    $category->makeroot();
+                    $category->save();
                     \Yii::$app->session->setFlash("success","创建一级分类".$category->name."成功");
                     //刷新
                     return $this->refresh();

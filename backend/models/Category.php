@@ -79,4 +79,8 @@ class Category extends \yii\db\ActiveRecord
     {
         return new  MenuQuery(get_called_class());
     }
+    public function getNametext(){
+
+        return str_repeat("-",$this->depth*4).$this->name;
+    }
 }

@@ -41,8 +41,6 @@
 ])
 ?>
 <br/>
-<a href="<?=\yii\helpers\Url::to(["brand/add"])?>" class="btn btn-info">添加</a>
-<a href="<?=\yii\helpers\Url::to(["brand/h"])?>" class="btn btn-info">回收站</a>
 
 
 

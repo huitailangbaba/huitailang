@@ -20,4 +20,3 @@
 ]); ?>
 
 <br/>
-<a href="<?=\yii\helpers\Url::to(["category/add"])?>" class="btn btn-info">添加</a>

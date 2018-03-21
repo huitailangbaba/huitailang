@@ -154,17 +154,26 @@ class BrandController extends \yii\web\Controller
            }
 
             case "qiliuyun" :
-                $ak = 'g55WlYZmAcfjlQDw4CgilVkj-JiDkt6I7RtcPQM9';
-                $sk = '2XVES6fEUq2aK14htnOjSVf-7cOFd-2RHfknBjcy';
-                $domain = 'http://p5obj1i27.bkt.clouddn.com//';
-                $bucket = 'php1108';
+                $ak = 'ekAeZRyC-L2lCHQwg5CmDev71MwVE2ihHKbdNS0h';
+                $sk = 'SezB_6bhsjTtUdIWCqTuvYd-C-kHiEcPCz9_XQ8G';
+                $domain = 'http://p5u6km25v.bkt.clouddn.com//';
+                $bucket = 'huitailang';
                 $zone = 'south_china';
                 $qiniu = new Qiniu($ak, $sk,$domain, $bucket,$zone);
-                $key = time();
+                $key =uniqid();
                 $key .= strtolower(strrchr($_FILES["file"]['name'], '.'));
 
                 $qiniu->uploadFile($_FILES["file"]['tmp_name'],$key);
                 $url = $qiniu->getLink($key);
+
+                $fish=[
+                    'code'=>0,
+                    'url'=>$url,
+                    'attachment'=>$url
+                ];
+                //返回数据
+                return Json::encode($fish);
+
 
         }
 

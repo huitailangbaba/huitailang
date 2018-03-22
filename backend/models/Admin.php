@@ -26,6 +26,16 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
+    public function scenarios()
+    {
+        return parent::scenarios();
+
+        //定义新的方法
+        $parent["add"]=["name","password","status","email"];
+        $parent["edit"]=["name","password","status","email"];
+
+    }
+
     public function behaviors()
     {
         return [
@@ -43,10 +53,11 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['create_time', 'last_time'], 'integer'],
-            [["name","password"],"required"],
+            [["name"],"required"],
             ["email","email"],
-            ["ip","safe"]
+            [["status","img"],"safe"],
+            [["password"],"required","on" => "add"],
+            [["password"],"safe","on" => "edit"],
         ];
     }
 
@@ -74,7 +85,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return self::findOne($id);
+        return self::findOne(["id"=>$id,"status"=>"1"]);
     }
 
     /**
@@ -114,7 +125,8 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getAuthKey()
     {
-        // TODO: Implement getAuthKey() method.
+        //返回令牌
+        return $this->auth_key;
     }
 
     /**
@@ -127,6 +139,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-        // TODO: Implement validateAuthKey() method.
+        // 验证令牌
+        return $this->auth_key===$authKey;
     }
 }

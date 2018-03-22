@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Admin;
+use backend\models\LoginForm;
 
 class AdminController extends \yii\web\Controller
 {
@@ -16,7 +17,7 @@ class AdminController extends \yii\web\Controller
 
     }
     public function actionLogin(){
-        $login = new Admin();
+        $login = new LoginForm();
 
         $request = \Yii::$app->request;
 
@@ -24,25 +25,26 @@ class AdminController extends \yii\web\Controller
 
             //绑定数据
             $login->load($request->post());
-            $result=  Admin::find()->where(["name"=>$login->name])->one();
+            $result=  Admin::find()->where(["name"=>$login->name,"status"=>"1"])->one();
             //判断账号
 
             if($result){
                 //判断密码是否正确
-                if($login->password==$result->password){
+                if(\Yii::$app->security->validatePassword($login->password,$result->password)){
 
                     //登录
-                    \Yii::$app->user->login($result);
+                    \Yii::$app->user->login($result,$login->rememberMe?0:0);
 
                     //跳转到首页
                     \Yii::$app->session->setFlash("success","登录成功");
                     return $this->redirect(["admin/index"]);
 
                 }else{
-                    \Yii::$app->session->setFlash("danger","密码不正确");
+
+                $login->addError("password","密码错误");
                 }
             }else{
-                \Yii::$app->session->setFlash("danger","用户明不正确");
+                $login->addError("name","账号不存在或已禁用");
             }
         }
 
@@ -55,7 +57,7 @@ class AdminController extends \yii\web\Controller
     {
         //生成表单模型
         $model = new Admin();
-
+        $model->setScenario("add");
 
         //创建一个Request对象
         $request =\Yii::$app->request;
@@ -65,8 +67,13 @@ class AdminController extends \yii\web\Controller
         if($request->isPost){
             //绑定数据
             $model->load($request->post());
+            //给密码加密
+            $model->password=\Yii::$app->security->generatePasswordHash($model->password);
+
+            $model->auth_key=\Yii::$app->security->generateRandomString();
+
             $model->last_time=time();
-            $model->ip=\Yii::$app->request->userIP;
+            $model->ip=ip2long(\Yii::$app->request->userIP);
 
             //后端验证
             if($model->validate()){
@@ -95,6 +102,9 @@ class AdminController extends \yii\web\Controller
     public function actionEdit($id)
     {
         $model =Admin::findOne($id);
+
+          $model->setScenario("edit");
+        $password = $model->password;
         //创建一个Request对象
         $request =\Yii::$app->request;
 
@@ -103,6 +113,12 @@ class AdminController extends \yii\web\Controller
         if($request->isPost){
             //绑定数据
             $model->load($request->post());
+            if($model->password){
+                //给密码加密
+                $model->password=\Yii::$app->security->generatePasswordHash($model->password);
+            }else{
+                $model->password=$password;
+            }
 
             //后端验证
             if($model->validate()){

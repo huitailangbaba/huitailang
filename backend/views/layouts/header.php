@@ -65,7 +65,7 @@ use yii\helpers\Html;
                         <li class="user-footer">
                             <div class="pull-left">
                                 <?= Html::a(
-                                    '登录',
+                                    '不要点这里',
                                     ['admin/login'],
                                     ['data-method' => 'post', 'class' => 'btn btn-default btn-flat']
                                 ) ?>

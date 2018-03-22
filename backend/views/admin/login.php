@@ -41,7 +41,7 @@ $fieldOptions2 = [
 
         <div class="row">
             <div class="col-xs-8">
-
+                <?= $form->field($login, 'rememberMe')->checkbox() ?>
             </div>
             <!-- /.col -->
             <div class="col-xs-4">

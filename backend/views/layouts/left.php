@@ -2,7 +2,7 @@
 
     <section class="sidebar">
 <br/>
-       
+
 
         <!-- Sidebar user panel -->
         <div class="user-panel">
@@ -29,69 +29,35 @@
         </form>
         <!-- /.search form -->
 
+        <?php
+        $callback = function($menu){
+            $data = json_decode($menu['data'], true);
+            $items = $menu['children'];
+            $return = [
+                'label' => $menu['name'],
+                'url' => [$menu['route']],
+            ];
+            //处理我们的配置
+            if ($data) {
+                //visible
+                isset($data['visible']) && $return['visible'] = $data['visible'];
+                //icon
+                isset($data['icon']) && $data['icon'] && $return['icon'] = $data['icon'];
+                //other attribute e.g. class...
+                $return['options'] = $data;
+            }
+            //没配置图标的显示默认图标
+            (!isset($return['icon']) || !$return['icon']) && $return['icon'] = 'fa fa-circle-o';
+            $items && $return['items'] = $items;
+            return $return;
+        };
+        ?>
+
         <?= dmstr\widgets\Menu::widget(
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
+                'items' => \mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback),
 
-
-                    [
-                        'label' => '商品管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '商品首页', 'icon' => 'file-code-o', 'url' => ['goods/index'],],
-                            ['label' => '商品添加', 'icon' => 'file-code-o', 'url' => ['goods/add'],],
-                        ],
-                    ],
-
-
-
-                    [
-                        'label' => '品牌管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '品牌首页', 'icon' => 'file-code-o', 'url' => ['brand/index'],],
-                            ['label' => '品牌添加', 'icon' => 'file-code-o', 'url' => ['brand/add'],],
-                            ['label' => '回收站', 'icon' => 'file-code-o', 'url' => ['brand/h'],],
-                        ],
-                    ],
-
-                    [
-                        'label' => '文章管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '文章首页', 'icon' => 'file-code-o', 'url' => ['article/index'],],
-                            ['label' => '文章添加', 'icon' => 'file-code-o', 'url' => ['article/add'],],
-                            ['label' => '文章分类管理', 'icon' => 'file-code-o', 'url' => ['article-category/index'],
-                                'items' => [
-                                    ['label' => '文章分类首页', 'icon' => 'file-code-o', 'url' => ['article-category/index'],],
-                                    ['label' => '文章分类添加', 'icon' => 'file-code-o', 'url' => ['article-category/add'],],
-                                ],
-                                ],
-                        ],
-                    ],
-
-
-                    [
-                        'label' => '管理员管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '管理员首页', 'icon' => 'file-code-o', 'url' => ['admin/index'],],
-                            ['label' => '管理员添加', 'icon' => 'file-code-o', 'url' => ['admin/add'],],
-                        ],
-                    ],
-
-
-
-
-
-
-                ],
             ]
         ) ?>
 

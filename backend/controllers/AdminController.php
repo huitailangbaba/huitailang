@@ -151,6 +151,6 @@ class AdminController extends \yii\web\Controller
     public function actionOut(){
         \Yii::$app->user->logout();
         \Yii::$app->session->setFlash("success","退出成功");
-        return $this->redirect(["login"]);
+        return $this->redirect(["admin/login"]);
     }
 }

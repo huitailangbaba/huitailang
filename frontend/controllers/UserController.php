@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\components\ShopCart;
 use frontend\models\User;
 use Mrgoon\AliSms\AliSms;
 use yii\helpers\Json;
@@ -127,6 +128,10 @@ class UserController extends \yii\web\Controller
                     \Yii::$app->user->login($user,$model->rememberMe?3600*24*7:0);
 
 
+                    //同步数据
+                    (new ShopCart())->dbSyn()->flush()->save();
+
+
                     $result =[
                         "status"=>1,
                         "msg"=>"登录成功",
@@ -166,8 +171,10 @@ class UserController extends \yii\web\Controller
 
         return $this->render("login");
     }
-    public function actionLoginout(){
+    public function actionLogout(){
         \Yii::$app->user->logout();
+
+        return $this->redirect(["index/index"]);
 
     }
 

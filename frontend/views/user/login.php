@@ -119,11 +119,29 @@
     <script type="text/javascript" src="/layer-v3.1.1/layer/layer.js"></script>
  <script>
 
+     function getQueryVariable(variable)
+     {
+         var query = window.location.search.substring(1);
+         var vars = query.split("&");
+         for (var i=0;i<vars.length;i++) {
+             var pair = vars[i].split("=");
+             if(pair[0] == variable){return pair[1];}
+         }
+         return(false);
+     }
+
     $(function () {
         $(".login_btn").click(function () {
             $.post("/user/login",$("#login_from").serialize(),function (data) {
                 if(data.status) {
                     layer.msg(data.msg);
+
+
+                    if(getQueryVariable("url")===false){
+                        window.location.href="/index/index";
+                    }else {
+                        window.location.href=decodeURIComponent(getQueryVariable("url"));
+                    }
                 }else {
                     layer.msg(data.msg)
                 }

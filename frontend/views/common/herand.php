@@ -10,10 +10,10 @@
                     <?php
 
                     $html1 =<<<html
-                    <a href="<?=yii\helpers\Url::to(['user/login'])?>">登录</a> [<a href="<?=yii\helpers\Url::to(['user/reg'])?>">免费注册</a>]
+                    <a href="/user/login">登录</a> [<a href="<?=yii\helpers\Url::to(['user/reg'])?>">免费注册</a>]
 html;
                     $html2=<<<html
-                    <a href="<?=yii\helpers\Url::to(['user/loginout'])?>">注销</a> [<a href="<?=yii\helpers\Url::to(['user/reg'])?>">免费注册</a>]
+                    <a href="/user/logout">注销</a> [<a href="<?=yii\helpers\Url::to(['user/reg'])?>">免费注册</a>]
 html;
                     if(Yii::$app->user->isGuest){
                         echo $html1;
@@ -34,4 +34,5 @@ html;
         </div>
     </div>
 </div>
+
 <!-- 顶部导航 end -->

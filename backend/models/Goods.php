@@ -85,4 +85,10 @@ class Goods extends \yii\db\ActiveRecord
    public function  getCate(){
        return $this->hasOne(Category::className(),["id"=>"category_id"]);
   }
+  public function getcont(){
+       return $this->hasOne(GoodsCont::className(),["goods_id"=>"id"]);
+  }
+  public function getGetall(){
+      return $this->hasMany(GoodsPath::className(),["goods_id"=>"id"]);
+  }
 }

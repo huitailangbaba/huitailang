@@ -16,7 +16,7 @@
 </head>
 <body>
 	<!-- 顶部导航 start -->
-	<?php
+    <?php
     include Yii::getAlias("@app")."/views/common/herand.php";
     ?>
 	<!-- 顶部导航 end -->

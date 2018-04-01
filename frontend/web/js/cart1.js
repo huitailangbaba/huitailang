@@ -5,7 +5,25 @@
 */
 
 $(function(){
-	
+    //总计金额
+    var total = 0;
+    $(".col5 span").each(function(){
+        total += parseFloat($(this).text());
+    });
+
+    $("#total").text(total.toFixed(2));
+
+
+	//删除
+	$(".col6 a").click(function () {
+        var tr =$(this).parent().parent()
+        var id =tr.attr("data-id");
+		$.getJSON("/goods/del",{id:id},function (data) {
+			if(data.status){
+				tr.remove();
+			}
+        })
+    })
 	//减少
 	$(".reduce_num").click(function(){
 		var amount = $(this).parent().find(".amount");
@@ -14,6 +32,13 @@ $(function(){
 		} else{
 			$(amount).val(parseInt($(amount).val()) - 1);
 		}
+		var num =$(this).next().val();
+		var id =$(this).parent().parent().attr("data-id");
+
+		$.getJSON("/goods/update",{id:id,amount:num},function () {
+			
+        })
+
 		//小计
 		var subtotal = parseFloat($(this).parent().parent().find(".col3 span").text()) * parseInt($(amount).val());
 		$(this).parent().parent().find(".col5 span").text(subtotal.toFixed(2));

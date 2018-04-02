@@ -38,7 +38,8 @@
 	<!-- 页面头部 end -->
 	
 	<div style="clear:both;"></div>
-
+<form>
+    <input type="hidden" name="_csrf-frontend" value="<?=Yii::$app->request->csrfToken?>"/>
 	<!-- 主体部分 start -->
 	<div class="fillin w990 bc mt15">
 		<div class="fillin_hd">
@@ -50,72 +51,14 @@
 			<div class="address">
 				<h3>收货人信息 <a href="javascript:;" id="address_modify"></a></h3>
 				<div class="address_info">
-				<p>
-					<input type="radio" value="1" name="address_id"/>许坤  17002810530  北京市 昌平区 仙人跳区 仙人跳大街 </p>
-					<input type="radio" value="1" name="address_id"/>许坤  17002810530  四川省 成都市 高新区 仙人跳大街 </p>
+                    <?php foreach ($address as $addres):?>
+                        <p>
+                            <input type="radio" value="<?=$addres->id?>" name="address_id" <?= $addres->status?"checked":""?>/><?php echo  $addres->name?>  <?php echo $addres->mobile?>  <?php echo $addres->province?> <?php echo $addres->city?> <?php echo $addres->county?> <?php echo $addres->address?>
+                        </p>
+                    <?php endforeach;?>
 				</div>
 
-				<div class="address_select none">
-					<ul>
-						<li class="cur">
-							<input type="radio" name="address" checked="checked" />王超平 北京市 昌平区 建材城西路金燕龙办公楼一层 13555555555 
-							<a href="">设为默认地址</a>
-							<a href="">编辑</a>
-							<a href="">删除</a>
-						</li>
-						<li>
-							<input type="radio" name="address"  />王超平 湖北省 武汉市  武昌 关山光谷软件园1号201 13333333333
-							<a href="">设为默认地址</a>
-							<a href="">编辑</a>
-							<a href="">删除</a>
-						</li>
-						<li><input type="radio" name="address" class="new_address"  />使用新地址</li>
-					</ul>	
-					<form action="" class="none" name="address_form">
-						<ul>
-							<li>
-								<label for=""><span>*</span>收 货 人：</label>
-								<input type="text" name="" class="txt" />
-							</li>
-							<li>
-								<label for=""><span>*</span>所在地区：</label>
-								<select name="" id="">
-									<option value="">请选择</option>
-									<option value="">北京</option>
-									<option value="">上海</option>
-									<option value="">天津</option>
-									<option value="">重庆</option>
-									<option value="">武汉</option>
-								</select>
 
-								<select name="" id="">
-									<option value="">请选择</option>
-									<option value="">朝阳区</option>
-									<option value="">东城区</option>
-									<option value="">西城区</option>
-									<option value="">海淀区</option>
-									<option value="">昌平区</option>
-								</select>
-
-								<select name="" id="">
-									<option value="">请选择</option>
-									<option value="">西二旗</option>
-									<option value="">西三旗</option>
-									<option value="">三环以内</option>
-								</select>
-							</li>
-							<li>
-								<label for=""><span>*</span>详细地址：</label>
-								<input type="text" name="" class="txt address"  />
-							</li>
-							<li>
-								<label for=""><span>*</span>手机号码：</label>
-								<input type="text" name="" class="txt" />
-							</li>
-						</ul>
-					</form>
-					<a href="" class="confirm_btn"><span>保存收货人信息</span></a>
-				</div>
 			</div>
 			<!-- 收货人信息  end-->
 
@@ -134,33 +77,17 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="cur">	
+
+                        <?php foreach ($deliveries as $k=>$delivery):?>
+							<tr class="<?=$k>0?"":"cur"?>">
 								<td>
-									<input type="radio" name="delivery" checked="checked" />普通快递送货上门
-
+									<input type="radio" name="delivery" value="<?= $delivery->id?>" <?= $k>0?"":"checked"?>/><?=$delivery->name?>
 								</td>
-								<td>￥10.00</td>
-								<td>每张订单不满499.00元,运费15.00元, 订单4...</td>
+								<td>￥<span><?=$delivery->price?></span></td>
+								<td><?= $delivery->intro?></td>
 							</tr>
-							<tr>
-								
-								<td><input type="radio" name="delivery" />特快专递</td>
-								<td>￥40.00</td>
-								<td>每张订单不满499.00元,运费40.00元, 订单4...</td>
-							</tr>
-							<tr>
-								
-								<td><input type="radio" name="delivery" />加急快递送货上门</td>
-								<td>￥40.00</td>
-								<td>每张订单不满499.00元,运费40.00元, 订单4...</td>
-							</tr>
-							<tr>
-
-								<td><input type="radio" name="delivery" />平邮</td>
-								<td>￥10.00</td>
-								<td>每张订单不满499.00元,运费15.00元, 订单4...</td>
-							</tr>
-						</tbody>
+                        <?php endforeach;?>
+                        </tbody>
 					</table>
 
 				</div>
@@ -173,26 +100,20 @@
 				<div class="pay_info">
 					<p>货到付款</p>
 				</div>
-
 				<div class="pay_select">
-					<table> 
-						<tr class="cur">
-							<td class="col1"><input type="radio" name="pay" />货到付款</td>
-							<td class="col2">送货上门后再收款，支持现金、POS机刷卡、支票支付</td>
+
+                    <?php foreach ($payTypes as $k=>$payType):?>
+
+						<tr class="<?=$k>0?"":"cur"?>">
+							<td class="col1"><input type="radio" name="pay" <?= $k>0?"":"checked"?> value="<?=$payType->id?>"/><?=$payType->name?></td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<td class="col2"><?=$payType->intro?></td>
 						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />在线支付</td>
-							<td class="col2">即时到帐，支持绝大数银行借记卡及部分银行信用卡</td>
-						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />上门自提</td>
-							<td class="col2">自提时付款，支持现金、POS刷卡、支票支付</td>
-						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />邮局汇款</td>
-							<td class="col2">通过快钱平台收款 汇款后1-3个工作日到账</td>
-						</tr>
-					</table>
+                        <br>
+                    <?php endforeach;?>
+
+
 
 				</div>
 			</div>
@@ -215,38 +136,30 @@
 						</tr>	
 					</thead>
 					<tbody>
+                    <?php foreach ($goods as $good):?>
 						<tr>
-							<td class="col1"><a href=""><img src="/images/cart_goods1.jpg" alt="" /></a>  <strong><a href="">【1111购物狂欢节】惠JackJones杰克琼斯纯羊毛菱形格</a></strong></td>
-							<td class="col3">￥499.00</td>
-							<td class="col4"> 1</td>
-							<td class="col5"><span>￥499.00</span></td>
+							<td class="col1"><a href=""><img src="<?=$good->logo?>" alt="" /></a>  <strong><a href=""><?=$good->name?></a></strong></td>
+							<td class="col3">￥<span><?=$good->shop_price?></span></td>
+							<td class="col4"><?=$carts[$good->id]?></td>
+							<td class="col5"><span><?=$good->shop_price*$carts[$good->id]?></span></td>
 						</tr>
-						<tr>
-							<td class="col1"><a href=""><img src="/images/cart_goods2.jpg" alt="" /></a> <strong><a href="">九牧王王正品新款时尚休闲中长款茄克EK01357200</a></strong></td>
-							<td class="col3">￥1102.00</td>
-							<td class="col4">1</td>
-							<td class="col5"><span>￥1102.00</span></td>
-						</tr>
+                    <?php endforeach;?>
 					</tbody>
 					<tfoot>
 						<tr>
 							<td colspan="5">
 								<ul>
 									<li>
-										<span>4 件商品，总商品金额：</span>
-										<em>￥5316.00</em>
-									</li>
-									<li>
-										<span>返现：</span>
-										<em>-￥240.00</em>
+										<span><?=$shopNum?> 件商品，总商品金额：</span>
+										<em>￥<span id="goods_price"><?= $shopPrice?></span></em>
 									</li>
 									<li>
 										<span>运费：</span>
-										<em>￥10.00</em>
+										<em>￥<span id="price"><?=$deliveries[0]->price?></span></em>
 									</li>
 									<li>
 										<span>应付总额：</span>
-										<em>￥5076.00</em>
+										<em>￥<span class="all_pirce"><?=$shopPrice+$deliveries[0]->price?></span></em>
 									</li>
 								</ul>
 							</td>
@@ -259,13 +172,13 @@
 		</div>
 
 		<div class="fillin_ft">
-			<a href=""><span>提交订单</span></a>
-			<p>应付总额：<strong>￥5076.00元</strong></p>
+			<a href="javascript:;" id="sub_btn"><span>提交订单</span></a>
+			<p>应付总额：<strong>￥<span class="all_pirce"><?=$shopPrice+$deliveries[0]->price?></span></strong></p>
 			
 		</div>
 	</div>
 	<!-- 主体部分 end -->
-
+</form>
 	<div style="clear:both;"></div>
 	<!-- 底部版权 start -->
 	<div class="footer w1210 bc mt15">
@@ -292,6 +205,27 @@
 			<a href=""><img src="/images/beian.gif" alt="" /></a>
 		</p>
 	</div>
+    <script>
+        $(function () {
+          //监听事件
+            $("input[name='delivery']").change(function () {
+                //当前面价格
+               var price=$(this).parent().next().children().text();
+              //更爱运费
+                $("#price").text(price);
+                //更爱总价
+                $(".all_pirce").text((price-0)+($("#goods_price").text()-0));
+            });
+        });
+
+        $("#sub_btn").click(function () {
+            //提交数据
+            $.post("/orders/index",$("form").serialize(),function (data) {
+                 console.dir(data);
+            },"json");
+        })
+
+        </script>
 	<!-- 底部版权 end -->
 </body>
 </html>

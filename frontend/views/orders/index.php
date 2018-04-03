@@ -205,6 +205,8 @@
 			<a href=""><img src="/images/beian.gif" alt="" /></a>
 		</p>
 	</div>
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/layer-v3.1.1/layer/layer.js"></script>
     <script>
         $(function () {
           //监听事件
@@ -221,7 +223,10 @@
         $("#sub_btn").click(function () {
             //提交数据
             $.post("/orders/index",$("form").serialize(),function (data) {
-                 console.dir(data);
+                if(data.status) {
+                    layer.msg(data.msg);
+                    window.location.href="/orders/ok?id="+data.id;
+                }
             },"json");
         })
 

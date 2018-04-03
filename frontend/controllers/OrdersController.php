@@ -9,12 +9,17 @@ use backend\models\OrderDetail;
 use backend\models\PayType;
 use frontend\models\Address;
 use frontend\models\Cart;
+use function Sodium\compare;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use EasyWeChat\Foundation\Application;
+use Endroid\QrCode\QrCode;
+use yii\helpers\Url;
 
 class OrdersController extends \yii\web\Controller
 {
+    public $enableCsrfValidation=false;
     public function actionIndex()
     {
 
@@ -150,7 +155,8 @@ class OrdersController extends \yii\web\Controller
 
                     return Json::encode([
                         "status"=>1,
-                        "msg"=>"订单提交成功"
+                        "msg"=>"订单提交成功",
+                        "id"=>$order->id,
                     ]);
 
                 } catch(Exception $e) {
@@ -183,6 +189,86 @@ class OrdersController extends \yii\web\Controller
 
         }
         return $this->render('index',compact("shopNum","shopPrice","address","deliveries","goods","payTypes","carts"));
+    }
+    public function actionWx($id){
+
+
+
+        $order = Order::findOne($id);
+
+        $options = \Yii::$app->params["wx"];
+
+
+        $app = new Application($options);
+
+        $payment = $app->payment;
+
+
+        $attributes = [
+            'trade_type'       => 'NATIVE', // JSAPI，NATIVE，APP...
+            'body'             => 'iPad mini 16G 白色',
+            'detail'           => 'iPad mini 16G 白色',
+            'out_trade_no'     => $order->trade_no,
+            'total_fee'        => $order->price*100, // 单位：分
+            'notify_url'       => Url::to(['orders/notify'],true), // 支付结果通知网址，如果不设置则会使用配置里的默认地址
+           // 'openid'           => '当前用户的 openid', // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识，
+            // ...
+        ];
+
+        $order = new \EasyWeChat\Payment\Order($attributes);
+
+
+        $result = $payment->prepare($order);
+
+        if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS'){
+           // $prepayId = $result->prepay_id;
+
+
+            $qrCode = new QrCode($result->code_url);
+
+            header('Content-Type: '.$qrCode->getContentType());
+            echo $qrCode->writeString();
+        }
+    }
+    public function actionOk($id){
+        $order = Order::findOne($id);
+        return $this->render("ok",compact("order"));
+    }
+    public function actionNotify(){
+
+        $options = \Yii::$app->params["wx"];
+
+
+        $app = new Application($options);
+
+        $response = $app->payment->handleNotify(function($notify, $successful){
+            // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
+            $order=Order::findOne(["trade_no"=>$notify->out_trade_no]);
+
+            if (!$order) { // 如果订单不存在
+                return 'Order not exist.'; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
+            }
+
+            // 如果订单存在
+            // 检查订单是否已经更新过支付状态
+            if ($order->status!=1) { // 假设订单字段“支付时间”不为空代表已经支付
+                return true; // 已经支付成功了就不再更新了
+            }
+
+            // 用户是否支付成功
+            if ($successful) {
+                // 不是已经支付状态则修改为已经支付状态
+                $order->status =2;
+            } else { // 用户支付失败
+                $order->status = 'paid_fail';
+            }
+
+            $order->save(); // 保存订单
+
+            return true; // 返回处理完成
+        });
+
+        return $response;
     }
 
 }

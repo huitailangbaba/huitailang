@@ -116,6 +116,7 @@
                 if(data.status==2){
                     layer.msg("支付成功");
                     window.location.href="/index/index";
+                    setTimeout("window.location.href='/index/index'",3000);
                 }
             })
         }

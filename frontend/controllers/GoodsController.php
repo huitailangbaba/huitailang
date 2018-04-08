@@ -122,6 +122,9 @@ class GoodsController extends \yii\web\Controller
             ]);
             //添加一个对象
             $setCookie->add($cookie);
+        }else{
+            $cart = Cart::find()->where(["goods_id"=>$id,"user_id"=>\Yii::$app->user->id])->all();
+
         }
     }
     public function actionDel($id){

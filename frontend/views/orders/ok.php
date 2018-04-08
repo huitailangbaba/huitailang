@@ -104,5 +104,22 @@
 		</p>
 	</div>
 	<!-- 底部版权 end -->
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/layer-v3.1.1/layer/layer.js"></script>
+    <script>
+
+        setInterval("getStatus()",1000);
+        var id=<?=$order->id?>;
+        function getStatus() {
+            $.getJSON("/orders/status?id="+id,function (data) {
+                console.dir(data.status);
+                if(data.status==2){
+                    layer.msg("支付成功");
+                }
+            })
+        }
+        getStatus();
+
+    </script>
 </body>
 </html>

@@ -270,5 +270,41 @@ class OrdersController extends \yii\web\Controller
 
         return $response;
     }
+    public function actionClear(){
+
+        $db = \Yii::$app->db;
+        $transaction = $db->beginTransaction();
+
+        try {
+            //找出超时未支付
+            $orders = Order::find()->where(["status"=>1])->andWhere(["<","create_time",time()-900])->asArray()->all();
+            $orderId=array_column($orders,"id");
+            //给所有符合条件的状态改为0
+            Order::updateAll(["status"=>0],["in","id",$orderId]);
+            //的吧订单的商品库存还原
+            foreach ($orders as $order){
+                $orderDetas = OrderDetail::find()->where(["order_id"=>$order["id"]])->all();
+                //循环商品详情
+                foreach ($orderDetas as $orderDeta ){
+                    $good =Goods::findOne($orderDeta->goods_id);
+                    $good->stock+=$orderDeta->amount;
+                    $good->save();
+
+                }
+            }
+
+            $transaction->commit();
+
+        } catch(Exception $e) {
+
+            $transaction->rollBack();
+
+            throw $e;
+        }
+    }
+    public function actionStatus($id){
+        $order =Order::findOne($id);
+        return Json::encode($order);
+    }
 
 }
